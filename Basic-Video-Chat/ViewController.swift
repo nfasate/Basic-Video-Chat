@@ -193,7 +193,7 @@ extension ViewController: OTSubscriberDelegate {
             pubView.isUserInteractionEnabled = true
             pubView.frame = CGRect(x: self.view.frame.width - 130, y: 30, width: 120, height: 150)
             pubView.transform = CGAffineTransform(scaleX: 5, y: 5)
-            UIView.animate(withDuration: 0.4, animations: {
+            UIView.animate(withDuration: 0.3, animations: {
                 pubView.transform = CGAffineTransform.identity
             }) { (finished) in
                 
