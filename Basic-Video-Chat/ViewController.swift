@@ -14,9 +14,9 @@ import OpenTok
 // Replace with your OpenTok API key
 let kApiKey = "46178582"
 // Replace with your generated session ID
-let kSessionId = "2_MX40NjE3ODU4Mn5-MTUzNTk4NTIwMDg0Mn5MV1hhbXN3T2NyejF1Zi9TTklVTnlyVHN-fg"
+let kSessionId = "1_MX40NjE3ODU4Mn5-MTUzNjA0NzcyMDI5Nn5IRjZPVDQwUmE3K2ppL3cvenBGN2R5cVl-fg"
 // Replace with your generated token
-let kToken = "T1==cGFydG5lcl9pZD00NjE3ODU4MiZzaWc9YzQ1NDgyMDMxOTY4MzYwYTY5Y2IyZTVkNjMyYTVjZTA0ZjljNGM1MzpzZXNzaW9uX2lkPTJfTVg0ME5qRTNPRFU0TW41LU1UVXpOVGs0TlRJd01EZzBNbjVNVjFoaGJYTjNUMk55ZWpGMVppOVRUa2xWVG5seVZITi1mZyZjcmVhdGVfdGltZT0xNTM1OTg1MjE2Jm5vbmNlPTAuNDAyNjEwNjQ2ODQ0MjM3NjQmcm9sZT1wdWJsaXNoZXImZXhwaXJlX3RpbWU9MTUzNTk4ODgxMSZpbml0aWFsX2xheW91dF9jbGFzc19saXN0PQ=="
+let kToken = "T1==cGFydG5lcl9pZD00NjE3ODU4MiZzaWc9OGVkMjI2M2EyZmRhMzUwZWI5NzAxYjdlNmJlYjI3ZTYxNzc2N2YzNzpzZXNzaW9uX2lkPTFfTVg0ME5qRTNPRFU0TW41LU1UVXpOakEwTnpjeU1ESTVObjVJUmpaUFZEUXdVbUUzSzJwcEwzY3ZlbkJHTjJSNWNWbC1mZyZjcmVhdGVfdGltZT0xNTM2MDQ3NzMyJm5vbmNlPTAuMTU3NzIwMzQzMzQwMjk5NiZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTM2MDY5MzMxJmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9"
 //let kToken = "T1==cGFydG5lcl9pZD00NjE3ODU4MiZzaWc9ZGRhMjE2YmYxOTc3YzliNWY3MGEwMzMxMTk0MzY2ZjJkMGJjMzE1MDpzZXNzaW9uX2lkPTFfTVg0ME5qRTNPRFU0TW41LU1UVXpOVGsyT1RjeU16azJNMzVLZVRWcVJDdFVlazVzS3psNFVUbGxlSEJ2Y2tVdllTOS1mZyZjcmVhdGVfdGltZT0xNTM1OTcwMjQ5Jm5vbmNlPTAuMDM0ODEyODAwMDc3NDM1NDgmcm9sZT1zdWJzY3JpYmVyJmV4cGlyZV90aW1lPTE1MzU5NzM4NDcmaW5pdGlhbF9sYXlvdXRfY2xhc3NfbGlzdD0="
 
 let kWidgetHeight = 240
@@ -193,20 +193,10 @@ extension ViewController: OTSubscriberDelegate {
             pubView.isUserInteractionEnabled = true
             pubView.frame = CGRect(x: self.view.frame.width - 130, y: 30, width: 120, height: 150)
             pubView.transform = CGAffineTransform(scaleX: 5, y: 5)
-            UIView.animate(withDuration: 0.3, animations: {
+            UIView.animate(withDuration: 0.4, animations: {
                 pubView.transform = CGAffineTransform.identity
-            }) { (finished) in
-                
-            }
-            
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
-                //
-//                pubView.frame.origin.x = self.view.frame.width - 130
-//                pubView.frame.origin.y = 30
-//                pubView.frame.size.width = 120
-//                pubView.frame.size.height = 150
                 //pubView.roundedAllCorner()
-            }, completion: nil)
+            })
         }
     }
     
@@ -214,19 +204,12 @@ extension ViewController: OTSubscriberDelegate {
         if let subsView = subscriber?.view {
             self.view.bringSubview(toFront: subsView)
             subsView.isUserInteractionEnabled = true
-//            UIView.animate(withDuration: 0.5, animations: {
-//                subsView.frame = CGRect(x: self.view.frame.width - 130, y: 30, width: 120, height: 150)
-//                //subsView.roundedAllCorner()
-//            })
-            
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {
-                //subsView.frame = CGRect(x: self.view.frame.width - 130, y: 30, width: 120, height: 150)
-                subsView.frame.origin.x = self.view.frame.width - 130
-                subsView.frame.origin.y = 30
-                subsView.frame.size.width = 120
-                subsView.frame.size.height = 150
+            subsView.frame = CGRect(x: self.view.frame.width - 130, y: 30, width: 120, height: 150)
+            subsView.transform = CGAffineTransform(scaleX: 5, y: 5)
+            UIView.animate(withDuration: 0.4, animations: {
+                subsView.transform = CGAffineTransform.identity
                 //subsView.roundedAllCorner()
-            }, completion: nil)
+            })
         }
     }
     
@@ -332,3 +315,4 @@ extension UIView {
         layer.mask = maskLayer1
     }
 }
+
