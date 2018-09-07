@@ -14,13 +14,17 @@ import OpenTok
 // Replace with your OpenTok API key
 let kApiKey = "46178582"
 // Replace with your generated session ID
-let kSessionId = "1_MX40NjE3ODU4Mn5-MTUzNjA0NzcyMDI5Nn5IRjZPVDQwUmE3K2ppL3cvenBGN2R5cVl-fg"
+let kSessionId = "1_MX40NjE3ODU4Mn5-MTUzNjMwMzI3MzMxMH5OZlBNK1NGNEpqM056aTl3WjV6VDNMRWF-fg"
 // Replace with your generated token
-let kToken = "T1==cGFydG5lcl9pZD00NjE3ODU4MiZzaWc9OGVkMjI2M2EyZmRhMzUwZWI5NzAxYjdlNmJlYjI3ZTYxNzc2N2YzNzpzZXNzaW9uX2lkPTFfTVg0ME5qRTNPRFU0TW41LU1UVXpOakEwTnpjeU1ESTVObjVJUmpaUFZEUXdVbUUzSzJwcEwzY3ZlbkJHTjJSNWNWbC1mZyZjcmVhdGVfdGltZT0xNTM2MDQ3NzMyJm5vbmNlPTAuMTU3NzIwMzQzMzQwMjk5NiZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTM2MDY5MzMxJmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9"
+let kToken = "T1==cGFydG5lcl9pZD00NjE3ODU4MiZzaWc9ZjYzNmUxNmJhMTljMDA4ZDZiODgzYTU1YzMxYjU3ZmQ1MDIxODZlZjpzZXNzaW9uX2lkPTFfTVg0ME5qRTNPRFU0TW41LU1UVXpOak13TXpJM016TXhNSDVPWmxCTksxTkdORXBxTTA1NmFUbDNXalY2VkROTVJXRi1mZyZjcmVhdGVfdGltZT0xNTM2MzAzMjkyJm5vbmNlPTAuNTU1MjQzMzQ4MTcyOTY3JnJvbGU9cHVibGlzaGVyJmV4cGlyZV90aW1lPTE1MzYzODk2OTImaW5pdGlhbF9sYXlvdXRfY2xhc3NfbGlzdD0="
 //let kToken = "T1==cGFydG5lcl9pZD00NjE3ODU4MiZzaWc9ZGRhMjE2YmYxOTc3YzliNWY3MGEwMzMxMTk0MzY2ZjJkMGJjMzE1MDpzZXNzaW9uX2lkPTFfTVg0ME5qRTNPRFU0TW41LU1UVXpOVGsyT1RjeU16azJNMzVLZVRWcVJDdFVlazVzS3psNFVUbGxlSEJ2Y2tVdllTOS1mZyZjcmVhdGVfdGltZT0xNTM1OTcwMjQ5Jm5vbmNlPTAuMDM0ODEyODAwMDc3NDM1NDgmcm9sZT1zdWJzY3JpYmVyJmV4cGlyZV90aW1lPTE1MzU5NzM4NDcmaW5pdGlhbF9sYXlvdXRfY2xhc3NfbGlzdD0="
 
 let kWidgetHeight = 240
 let kWidgetWidth = 320
+
+enum VideoDismissState {
+    case cornerRadiusChanging, sizeChanging, complete
+}
 
 class ViewController: UIViewController {
     lazy var session: OTSession = {
@@ -37,10 +41,22 @@ class ViewController: UIViewController {
     
     var tapGesture = UITapGestureRecognizer()
     
+    var initialGesturePosition: CGPoint = .zero
+    var maxCornerRadiusGesturePosition: CGPoint = .zero
+    var dismissState: VideoDismissState = .cornerRadiusChanging
+    let swipeGesture = UIPanGestureRecognizer()
+    
+    //MARK:-
     override func viewDidLoad() {
         super.viewDidLoad()
         
         doConnect()
+        view.backgroundColor = .clear
+        view.isOpaque = false
+    }
+    
+    override func didMove(toParentViewController parent: UIViewController?) {
+        
     }
     
     /**
@@ -73,11 +89,17 @@ class ViewController: UIViewController {
             pubView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
             view.addSubview(pubView)
             
-            tapGesture = UITapGestureRecognizer(target: self, action: #selector(animatePublisherView))
-            tapGesture.numberOfTapsRequired = 1
-            tapGesture.numberOfTouchesRequired = 1
-            pubView.addGestureRecognizer(tapGesture)
-            pubView.isUserInteractionEnabled = true
+            //tapGesture = UITapGestureRecognizer(target: self, action: #selector(animatePublisherView))
+            //tapGesture.numberOfTapsRequired = 1
+            //tapGesture.numberOfTouchesRequired = 1
+            //pubView.addGestureRecognizer(tapGesture)
+            pubView.isUserInteractionEnabled = false
+           
+            
+            swipeGesture.addTarget(self, action: #selector(minimiseView(_:)))
+            //swipeGesture.direction = .down
+            self.view?.addGestureRecognizer(swipeGesture)
+            //pubView.addGestureRecognizer(UISwipeGestureRecognizer(target: self, action: #selector(minimiseView(_:))))
         }
     }
     
@@ -114,6 +136,67 @@ class ViewController: UIViewController {
                 self.present(controller, animated: true, completion: nil)
             }
         }
+    }
+    
+
+    
+    func minimiseView(_ gesture: UIPanGestureRecognizer) {
+        let location = gesture.location(in: self.view)
+        print("Location \(location), gesture.state : \(gesture.state)")
+        switch gesture.state {
+        case .began:
+            initialGesturePosition = gesture.location(in: self.view)
+            dismissState = .cornerRadiusChanging
+        case .changed:
+            let currentPosition = gesture.location(in: self.view)
+            switch dismissState {
+            case .cornerRadiusChanging:
+                if let pubView = publisher.view {
+                    let swipeDistance = distance(between: initialGesturePosition, and: currentPosition)
+                    // play around with this formula to see what feels right
+                    self.view.layer.cornerRadius = swipeDistance / 2
+                    
+                    // at a certain point, switch to changing the size
+                    if swipeDistance >= self.view.frame.width / 2 {
+                        maxCornerRadiusGesturePosition = currentPosition
+                        dismissState = .sizeChanging
+                    }
+                }
+            case .sizeChanging:
+                if let pubView = publisher.view {
+                    let swipeDistance = distance(between: maxCornerRadiusGesturePosition, and: currentPosition)
+                    // again try different things to see what feels right here
+                    var scaleFactor = 50 / swipeDistance
+                    if scaleFactor >= 1 {
+                        scaleFactor = scaleFactor/2
+                    }
+                    self.view.transform = CGAffineTransform(scaleX: scaleFactor, y: scaleFactor)
+                    if scaleFactor <= 0.2 {
+                        dismissState = .complete
+                    }
+                    
+                }
+            case .complete:
+                // reset values
+                initialGesturePosition = .zero
+                maxCornerRadiusGesturePosition = .zero
+            }
+        case .ended: break
+            // if the gesture ends too soon you may want to animate the view back to full screen
+        case .possible:
+            break
+        case .cancelled:
+            break
+        case .failed:
+            break
+        }
+    }
+    
+    /// Measure distance between two points
+    func distance(between first: CGPoint, and second: CGPoint) -> CGFloat {
+        let xDist = first.x - second.x
+        let yDist = first.y - second.y
+        return CGFloat(sqrt(xDist * xDist + yDist * yDist))
     }
 }
 
